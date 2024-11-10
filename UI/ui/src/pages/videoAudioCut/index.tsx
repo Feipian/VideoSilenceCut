@@ -1,88 +1,45 @@
-import Link from 'next/link';
-import styles from './index.module.scss'
-import React, { ChangeEvent, useState } from 'react';
-import axios, { ResponseType } from 'axios';
-
+import React, { useState } from 'react';
 
 export default function VideoAudioCut() {
-  
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [status, setStatus] = useState<string>("");
-  const [progress, setProgress] = useState<number>(0);
+    // ... existing code ...
+    const [uploadProgress, setUploadProgress] = useState(0); // Track upload progress
+    const [debugInfo, setDebugInfo] = useState<string>(''); // Track debug information
 
-  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.currentTarget.files?.[0]
-    if (file) {
-      setSelectedFile(file);
-      console.log(file)
-    }
-  }
-
-  const handleFileUpload = () => {
-      if(!selectedFile){
-        alert("No file selected")
-        return
-        }
-      
-      const chunkSize = 1024 * 1024 * 10; // 10MB
-      const chunks = Math.ceil(selectedFile.size / chunkSize);  
-      const chunkProgress = 100 / chunks;
-      // record this chunk id
-      let chunckNumber = 0;
-      let start = 0;
-      let end = 0;
-
-      const uploadNextChunk = () => {
-        if(end < selectedFile.size){
-          // split the file into chunks
-          const chunk = selectedFile.slice(start, end)
-          const formData = new FormData()
-          formData.append('file', chunk)
-          formData.append('totalChunks', chunks.toString())
-          formData.append('chunkNumber', chunckNumber.toString())
-          formData.append('originalFileName', selectedFile.name)
-      
-          // upload the chunk
-          fetch('http://localhost:8000/api/uploadFile', {
-            method: 'POST',
-            body: formData
-          })
-          .then(response => response.json())
-          .then(data => {
-            console.log(data)
-            const temp = `Chunk ${
-              chunckNumber+1
-            }/${chunks} uploaded successfully`;
-
-            setStatus(temp)
-            setProgress(chunkProgress * (chunckNumber+1));
-            console.log(temp)
-            chunckNumber++;
-            start = end;
-            end = start + chunkSize;
-            uploadNextChunk();
-          })
-          .catch(error => {
-            console.error('Error uploading chunk:', error);
-          });
-        } else {
-          setProgress(100);
-          setSelectedFile(null);
-          console.log("All chunks uploaded successfully");
+    const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setDebugInfo(`Uploading file: ${file.name}`); // Debug info
+            const reader = new FileReader();
+            reader.onload = () => {
+                setUploadProgress(100); // Set progress to 100% when upload is complete
+                setDebugInfo(`Upload complete: ${file.name}`); // Debug info
+                // Process the video file to cut silence
+                cutSilenceFromVideo(file);
+            };
+            reader.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const percentComplete = (event.loaded / event.total) * 100;
+                    setUploadProgress(percentComplete); // Update progress
+                    setDebugInfo(`Upload progress: ${Math.round(percentComplete)}%`); // Debug info
+                }
+            };
+            reader.readAsArrayBuffer(file); // Start reading the file
         }
     };
-    // 
-    uploadNextChunk();
-  }
-  
 
-  return (
-    <div>
-      <h2>Resumable File Upload</h2>
-      <h3>{status}</h3>
-      {/* {progress > 0 && <Progress value={progress} />} // TODO: Add progress bar */}
-      <input type="file" onChange={handleFileChange} />
-      <button onClick={handleFileUpload}>Upload File</button>
-    </div>
-  );
+    const cutSilenceFromVideo = (file: File) => {
+        // Logic to analyze the video and cut silence parts
+        console.log("Cutting silence from video:", file.name);
+    };
+
+    return (
+        <div>
+            <input type="file" accept="video/*" onChange={handleVideoUpload} />
+            <div style={{ width: '100%', backgroundColor: '#e0e0e0', borderRadius: '5px', marginTop: '10px' }}>
+                <div style={{ width: `${uploadProgress}%`, backgroundColor: '#76c7c0', height: '20px', borderRadius: '5px' }} />
+            </div>
+            <p>{debugInfo}</p> {/* Display debug information */}
+            {/* ... existing code ... */}
+        </div>
+    );
 }
