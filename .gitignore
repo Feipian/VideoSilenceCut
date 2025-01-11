@@ -1,0 +1,5 @@
+/backend/temp
+/backend/tmp
+node_modules
+*backend/videoStorage
+*.mp4

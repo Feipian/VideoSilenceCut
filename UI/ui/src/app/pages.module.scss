@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Lilita+One&display=swap');
+
+$lilita-one-regular: "Lilita One", serif;
+
+.container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    align-content: center;
+    height: 100vh;
+    
+
+}
+
+.functionBox {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width:80%;
+    height:80%;
+    color:gray;
+    align-items: center;
+    gap: 10px;
+    border-radius: 5px;
+    padding-top: 2%;
+}
+.functionBox_Content_Block{
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    height: 100%;
+
+    
+}
+
+.functionBox_item {
+    height: auto;
+    width: 60%;
+    background-color:darkslategray;
+    // justify-content: center;
+    color: #fefae0;
+    font-size: large;
+    padding: 1%;
+    border-radius: 10em;
+    text-align: center;
+
+}
+
+
+
+.functionBox_title{
+    height: 10%;
+    width: 80%;
+    top: 1px;
+    padding-top: 10px;
+    background-color: #bc6c25;
+    border-style: solid;
+    border-radius: 0.2rem;
+    
+    
+    h2{
+        text-align: center;
+        justify-items: center;
+        margin-top: 0%;
+        color: black;
+        font-size: 26px;
+        font-family: $lilita-one-regular;
+        font-weight: bold;
+    }
+}

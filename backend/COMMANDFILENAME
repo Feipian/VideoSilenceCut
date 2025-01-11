@@ -1,0 +1,1 @@
+ffmpeg -y -i  "videoStorage\嚴以律己's meaning.mp4" -c:v h264_nvenc -vf "select='',setpts=N/FRAME_RATE/TB" -af "aselect='',asetpts=N/SR/TB" "videoStorage\cut\嚴以律己's meaning.mp4"
