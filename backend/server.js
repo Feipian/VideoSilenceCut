@@ -15,7 +15,7 @@ const { createServer } = require("http");
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
     cors: {
-        origin: "http://127.0.0.1:3000",
+        origin: ["http://127.0.0.1:3000", "http://localhost:3000"],
         // or with an array of origins
         // origin: ["https://my-frontend.com", "https://my-other-frontend.com", "http://localhost:3000"],
         credentials: true
@@ -58,7 +58,7 @@ app.post('/video/cutSilence/click', (req, res, _next) => {
         }
 
         const outputDir = path.join(__dirname, 'videoStorage', 'cut');
-        const outputFilePath = path.join(outputDir, 'cut_' + videoFile.name);
+        const outputFilePath = path.join(outputDir, videoFile.name);
         if (!fs.existsSync(outputDir)) {
             fs.mkdirSync(outputDir, { recursive: true });
         }
@@ -124,14 +124,16 @@ app.get('/video/:name', (req, res) => {
     console.log(`into Streamvideo: ${req.params.name}`)
     const fileName = decodeURIComponent(req.params.name);  // Decode the URL-encoded filename
 
+    console.log("fileName: ", fileName);
     if(!fileName){
         return res.status(404).send("File Not find!");
     }
-    const filePath = path.join( '/videoStorage', 'cut', fileName);
+    const filePath = path.join( './videoStorage', 'cut', fileName);
     console.log("Server Backend:", filePath);
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {
+        console.log("File not find")
         return res.status(404).send("File not found");
     }
 

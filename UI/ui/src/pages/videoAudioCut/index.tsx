@@ -1,11 +1,8 @@
-import React, { use, useEffect, useRef, useState } from 'react';
-import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile, toBlobURL } from '@ffmpeg/util';
-import { read } from 'fs';
-import { Socket } from 'socket.io-client';
-import { json } from 'stream/consumers';
-const { io } = require("socket.io-client");
+import React, { useEffect, useState } from 'react';
+// import { FFmpeg } from '@ffmpeg/ffmpeg';
+import { io } from "socket.io-client";
 import VideoPlayer from '@/components/VideoPlayer';
+// import { Socket } from 'net';
 
 
 export default function VideoAudioCut() {
@@ -13,20 +10,14 @@ export default function VideoAudioCut() {
 
 
 
-    const ffmpegRef = useRef< FFmpeg | null>(null);
+    // const ffmpegRef = useRef< FFmpeg | null>(null);
     const [uploadProgress, setUploadProgress] = useState(0); // Track upload progress
     const [debugInfo, setDebugInfo] = useState<string>(''); // Track debug information
     // for store vidoe
     const [video, setVideo] = React.useState<File | null>(null);
-    const [videoUrl, setVideoUrl] = useState<string | null>(null);
-    const videoRef = useRef<HTMLVideoElement | null>(null);
     // record video process status
-    const[Status, setStatus] = useState<String | null>(null);
+    const[Status, setStatus] = useState<string | null>(null);
     const [cutSilenceButton, setCutSilenceButton] = useState<boolean>(false); // Track cut silence button visibility
-    const [ffmpegOutput, setFfmpegOutput] = useState<string>(''); // Track FFmpeg output
-    const [uploadInfo, setuploadInfo] = useState('');
-    const [fetching, setFetching] = useState(false);
-    const [selectedFile, setFiles] = useState<File | undefined>(undefined);
     const [allowUpload, setAllowUpload] = useState(true);
     const [ProcessInfo, setProcessInfo] = useState("");
     const [FileName, setFileName] = useState("");
@@ -144,12 +135,13 @@ export default function VideoAudioCut() {
             // transferFileToBackend(file);
             setVideo(file);
             setAllowUpload(false);
-            setFiles(file);
         }
     };
 
     const transferFileToBackend = async (file: File) => {
         try {
+            setFileName("");
+            setStatus("cutSilence");
             if (file) {
                 const formdata = new FormData();
                 formdata.append('Video', file);
@@ -157,9 +149,11 @@ export default function VideoAudioCut() {
                     method: 'POST',
                     body: formdata,
                 })
+                setStatus(null);
             }
         } catch (err) {
             console.error(err);
+            setStatus(null);
         }
     };
 
@@ -192,7 +186,6 @@ export default function VideoAudioCut() {
                 <div style={{ width: `${uploadProgress}%`, backgroundColor: '#76c7c0', height: '20px', borderRadius: '5px' }} />
             </div>
             <p>{debugInfo}</p>
-            <pre>{ffmpegOutput}</pre>
             {cutSilenceButton && (
                 <button onClick={handleCutSilence} 
                     disabled={allowUpload}>
